@@ -7,7 +7,6 @@ const authRoutes = require('./routes/auth')
 const sessionAuth = require('./middleware/sessionAuth')
 require('dotenv').config()
 
-
 const app = express()
 
 if (process.env.NODE_ENV === 'production') {
@@ -19,17 +18,14 @@ if (process.env.NODE_ENV === 'production') {
 // app.use(cors())
 app.use(bodyParser.json())
 //app.use(express.static(path.join(__dirname, 'wordsie', 'build')))
-app.use(sessionAuth);
-console.log('cmon man')
- app.use(authRoutes)
-// app.use(wordRoutes)
-
+app.use(sessionAuth)
+app.use(authRoutes)
 
 const dbn = process.env.DB_NAME
 const dbu = process.env.DB_USER
 const dpw = process.env.DB_PW
 
-const MONGO_URI = `mongodb+srv://${dbu}:${dpw}@cluster0-eibwk.azure.mongodb.net/${dbn}?retryWrites=true&w=majority` 
+const MONGO_URI = `mongodb+srv://${dbu}:${dpw}@cluster0-eibwk.azure.mongodb.net/${dbn}?retryWrites=true&w=majority`
 
 mongoose
     .connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })

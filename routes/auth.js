@@ -1,13 +1,18 @@
 const express = require('express')
 const Session = require('../models/Session')
-
-// const authController = require('../controllers/auth')
+const {
+    handleSignIn,
+    validateRegistration,
+    registerUser,
+} = require('../util/validation')
 
 const router = express.Router()
 
 router.post('/login', async (req, res, next) => {
-      console.log("attempting login");
+    console.log('attempting login')
     const { authorization } = req.headers
+    const { email, password } = req.body
+
     // note: users already logged in should not be trying access this route
     if (req.userId) {
         return res.json({
@@ -16,52 +21,37 @@ router.post('/login', async (req, res, next) => {
             token: authorization,
         })
     }
+
     //no auth token
     try {
-        const user = await handleSignIn(req, res) //handleSignIn validates login info
-
-        //if the login info is correct, create session
-        if (user && user._id && user.email) {
-            sessionInfo = await createSession(user) // sessionInfo will return null on fail
-            console.log('response from session creation: ', sessionInfo)
-            if (sessionInfo && sessionInfo.token)
-                return res.json({
-                    success: true,
-                    userId: user._id,
-                    token: sessionInfo.token,
-                })
-        } else {
-            return res.status(400).json('no such user')
+        const userValidation = await handleSignIn(email, password) //handleSignIn validates login info
+        const { success, data } = userValidation
+        if (!success) {
+            return res
+                .status(400)
+                .json({ success: false, error: 'no such user' })
         }
+        const { user } = data // user object only available on successful validation
+        const token = await createSession(user) // sessionInfo will return null on fail
+        console.log('response token from session creation: ', token)
+        return token
+            ? res.status(200).json({
+                  success: true,
+                  userId: user.id, // using mongo's convenient version of _id
+                  token,
+              })
+            : res
+                  .status(400)
+                  .json({ success: false, error: 'failed to save session' })
     } catch (err) {
         console.log(err.message)
-
-        return res.status(400).json('oops.. something went wrong')
+        return res
+            .status(400)
+            .json({ success: false, error: 'oops.. something went wrong' })
     }
 })
 
-//a function that validates username/password and returns null or fail
-//on success, should return the user
-const handleSignIn = async (req, res) => {
-    const { email, password } = req.body
-    if (!email || !password) {
-        return null
-    }
-    try {
-        const user = await User.findOne({ email: email })
-
-        if (!user) {
-            return null
-        }
-        const isCorrectPassword = await bcrypt.compare(password, user.password)
-        return isCorrectPassword ? user : null
-    } catch (err) {
-        console.log('error in handling sign in', err.message)
-        return null
-    }
-}
-
-// create the session and return the token or null
+// create the session and return the token or null on failure
 const createSession = (user) => {
     //create jwt and user data
     const { _id, email } = user
@@ -74,7 +64,7 @@ const createSession = (user) => {
         session
             .save()
             .then((result) => {
-                resolve({ token })
+                resolve(token)
             })
             .catch((err) => {
                 console.error(err.message)
@@ -89,6 +79,33 @@ const signToken = (email) => {
         expiresIn: '2 days',
     })
 }
+
+router.post('/register', async (req, res, next) => {
+    const { name, email, password } = req.body
+
+    try {
+        const validationSuccess = await validateRegistration(
+            name,
+            email,
+            password
+        )
+        if (!validationSuccess.success) {
+            return res.status(400).json(validationSuccess)
+        }
+        const registrationSuccess = await registerUser(name, email, password)
+        if (!registrationSuccess.success) {
+            return res.status(400).json(registrationSuccess)
+        }
+        const { user } = registrationSuccess.data
+        return res.status(200).json({ success: true, data: user })
+    } catch (err) {
+        console.error(err.message)
+        return {
+            success: false,
+            data: 'oops.. something went wrong with validation/registration',
+        }
+    }
+})
 
 // router.get('/signup', authController.getSignup)
 
