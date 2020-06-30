@@ -1,5 +1,5 @@
 const express = require('express')
-const Session = require('../models/Session')
+// const Session = require('../models/Session')
 const jwt = require("jsonwebtoken")
 const {
     handleSignIn,
@@ -10,19 +10,21 @@ const {
 const router = express.Router()
 
 router.post('/login', async (req, res) => {
-    console.log('attempting login')
-    const { authorization } = req.headers
+    console.log('attempting login using the following req body')
+    console.log(req.body)
+
+    // const { authorization } = req.headers
     const { email, password } = req.body;
+    if (!email || !password)  res.status(422).json('invalid input')
 
     // note: users already logged in should not be trying access this route
     // this handles the anamoly
-    if (req.userId) {
-        return res.json({
-            token: authorization,
-        })
-    }
+    // if (req.userId) {
+    //     return res.json({
+    //         token: authorization,
+    //     })
+    // }
 
-    //no auth token
     try {
         const getUser = await handleSignIn(req.body.email, password) //handleSignIn validates login info
         const { success, data } = getUser
@@ -37,7 +39,6 @@ router.post('/login', async (req, res) => {
         console.log('response token from session creation: ', token)
         return token
             ? res.status(200).json({
-                //   userId: user.id, // using mongo's convenient version of _id
                   token,
               })
             : res
@@ -55,21 +56,22 @@ router.post('/login', async (req, res) => {
 const createSession = (id, email) => {
     //create jwt and user data
     const token = signToken(email)
+    return Promise.resolve(token)
 
-    return new Promise((resolve, reject) => {
-        const session = new Session({
-            token: id,
-        })
-        session
-            .save()
-            .then((result) => {
-                resolve(token)
-            })
-            .catch((err) => {
-                console.error(err.message)
-                reject(null)
-            })
-    })
+    // return new Promise((resolve, reject) => {
+    //     const session = new Session({
+    //         token: id,
+    //     })
+    //     session
+    //         .save()
+    //         .then((result) => {
+    //             resolve(token)
+    //         })
+    //         .catch((err) => {
+    //             console.error(err.message)
+    //             reject(null)
+    //         })
+    // })
 }
 
 const signToken = (email) => {
@@ -81,7 +83,6 @@ const signToken = (email) => {
 
 router.post('/register', async (req, res, next) => {
     const { name, email, password } = req.body
-
     try {
         const validationResult = await validateRegistration(
             name,
@@ -102,12 +103,6 @@ router.post('/register', async (req, res, next) => {
     }
 })
 
-// router.get('/signup', authController.getSignup)
 
-// router.post('/login', authController.postLogin)
-
-// router.post('/signup', authController.postSignup)
-
-// router.post('/logout', authController.postLogout)
 
 module.exports = router

@@ -1,26 +1,21 @@
 const path = require('path')
-
 const express = require('express')
-
-// const shopController = require('../controllers/shop')
-// const isAuth = require('../middleware/is-auth')
+const Category = require('../models/Category')
 
 const router = express.Router()
 
-// router.get('/', shopController.getIndex)
+// send back all the products
+router.get('/products', async (req, res) => {
+    try {
+        const category = await Category.find()
+        res.status(200).json(category)
+    } catch (error) {
+        console.log(error.message || error)
+        res.status(500).send('Connection error')    
 
-// router.get('/products', shopController.getProducts)
+    } 
+})
 
-// router.get('/products/:productId', shopController.getProduct)
 
-// router.get('/cart', isAuth, shopController.getCart)
-
-// router.post('/cart', isAuth, shopController.postCart)
-
-// router.post('/cart-delete-item', isAuth, shopController.postCartDeleteProduct)
-
-// router.post('/create-order', isAuth, shopController.postOrder)
-
-// router.get('/orders', isAuth, shopController.getOrders)
 
 module.exports = router
