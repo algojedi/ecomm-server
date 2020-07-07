@@ -11,6 +11,10 @@ require('dotenv').config()
 const app = express()
 
 if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(__dirname,'client', 'build')))
+    app.get('/*', (req, res) => {
+        res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'))
+    })
     console.log('Running in production')
 } else {
     console.log(process.env.NODE_ENV)
@@ -18,12 +22,8 @@ if (process.env.NODE_ENV === 'production') {
 
 app.use(cors())
 app.use(bodyParser.json())
-app.use(express.static(path.join(__dirname, 'build')))
 app.use(authRoutes)
 app.use(shopRoutes)
-app.get('/*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'build', 'index.html'))
-})
 
 const dbn = process.env.DB_NAME
 const dbu = process.env.DB_USER
