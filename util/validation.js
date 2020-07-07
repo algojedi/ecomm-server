@@ -5,7 +5,6 @@ const bcrypt = require('bcrypt')
 //a function that checks if username/password matches a registered user
 //on success, returns the user
 const handleSignIn = async (email, password) => {
-    console.log('am i getting inside handlesignin?')
     if (!email || !password) {
         return { success: false, data: 'email/password are required fields' }
     }
@@ -17,7 +16,7 @@ const handleSignIn = async (email, password) => {
         const userId = user.id // 'friendly' version of mongo Object Id
         const isCorrectPassword = await bcrypt.compare(password, user.password)
         return isCorrectPassword
-            ? { success: true, data: { ...user._doc, id: userId} }
+            ? { success: true, data: { ...user._doc, id: userId } }
             : { success: false, data: 'incorrect password' }
     } catch (err) {
         return { success: false, data: err.message }

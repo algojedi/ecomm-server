@@ -8,7 +8,6 @@ const categorySchema = new Schema({
         type: String,
         required: true,
     },
-    // items: [{ type: Schema.Types.ObjectId, ref: 'Item' }]
     items: [
         {
             name: {
