@@ -11,13 +11,13 @@ require('dotenv').config()
 const app = express()
 
 if (process.env.NODE_ENV === 'production') {
+    console.log('Running in production')
     app.use(express.static(path.join(__dirname,'client', 'build')))
     app.get('/*', (req, res) => {
         res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'))
     })
-    console.log('Running in production')
 } else {
-    console.log(process.env.NODE_ENV)
+    console.log('running in dev')
 }
 
 app.use(cors())
