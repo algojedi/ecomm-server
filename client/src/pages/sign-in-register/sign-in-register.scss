@@ -1,0 +1,15 @@
+.sign-in-register {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    flex-wrap: wrap;
+    & > * {
+        padding: 5rem;
+    }
+    &_sign-in {
+
+    }
+    &_register {
+
+    }
+}

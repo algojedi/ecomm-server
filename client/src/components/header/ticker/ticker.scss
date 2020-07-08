@@ -1,0 +1,21 @@
+.ticker {
+    background-color: var(--color-black);
+    color: var(--color-text-onblack);
+    height: 3rem;
+    width: 100%;
+    font-size: var(--base-font-size);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &_msg-wrapper {
+        flex: 0 0.5 50vw;
+        text-align: center;
+        @media screen and (max-width: 500px) {
+            flex: 1;
+        }
+    }
+}
+.ticker-icons-provider {
+    margin: 0 1rem;
+}

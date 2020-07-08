@@ -1,0 +1,15 @@
+
+.register {
+  margin-top: 3rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+
+  flex: .75 300px;
+}
+    .err-msg {
+      color: red;
+      font-weight: bolder;
+      margin-top: 2rem;
+      font-size: 1.4rem;
+    }

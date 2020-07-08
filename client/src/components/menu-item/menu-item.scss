@@ -1,0 +1,22 @@
+.menu-item {
+    grid-column: span 2;
+    & + .lg {
+        grid-column: span 3;
+    }
+    &_background-image {
+        height: 300px;
+        transition: all 0.25s ease;
+        display: flex;
+        background-size: cover;
+        filter: brightness(125%);
+        cursor: pointer;
+        &:hover {
+            filter: brightness(100%);
+        }
+    }
+    &_content {
+        background: var(--color-primary);
+        color: whitesmoke;
+        padding: 1rem 2rem;
+    }
+}
