@@ -1,6 +1,6 @@
 const express = require('express')
 const bodyParser = require('body-parser')
-const path = require('path')
+// const path = require('path')
 const cors = require('cors')
 const mongoose = require('mongoose')
 const authRoutes = require('./routes/auth')
@@ -10,15 +10,15 @@ require('dotenv').config()
 
 const app = express()
 
-if (process.env.NODE_ENV === 'production') {
-    console.log('Running in production')
-    app.use(express.static(path.join(__dirname,'client', 'build')))
-    app.get('/*', (req, res) => {
-        res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'))
-    })
-} else {
-    console.log('running in dev')
-}
+// if (process.env.NODE_ENV === 'production') {
+//     console.log('Running in production')
+//    app.use(express.static(path.join(__dirname,'client', 'build')))
+//     app.get('/*', (req, res) => {
+//         res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'))
+//     }) 
+// } else {
+//     console.log('running in dev')
+// }
 
 app.use(cors())
 app.use(bodyParser.json())
